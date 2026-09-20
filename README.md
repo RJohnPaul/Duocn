@@ -224,7 +224,3 @@ reports no active division region.
 </details>
 
 <br>
-
-## Licence
-
-MIT. Copy the file, own the code.
