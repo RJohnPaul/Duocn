@@ -228,6 +228,3 @@ reports no active division region.
 ## Licence
 
 MIT. Copy the file, own the code.
-
-**If this project is abandoned tomorrow, everything you copied still compiles.**
-# Duocn
