@@ -1,5 +1,14 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 export default {
+  // There is a stray package-lock.json in the user's home directory, so Next
+  // walks up and infers the workspace root as ~ instead of this project. Pin it,
+  // or file tracing resolves against the wrong tree.
+  outputFileTracingRoot: here,
   outputFileTracingIncludes: {
     '/docs/**': ['./swift/DuoCN/Sources/DuoCN/**/*.swift'],
   },

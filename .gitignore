@@ -7,3 +7,4 @@ next-env.d.ts
 
 # intermediate research output from the brief workflow (kept locally)
 brief/_raw/
+.vercel
