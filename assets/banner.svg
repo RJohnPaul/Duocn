@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#ffffff" fill-opacity="0.10"/>
+    </pattern>
+    <radialGradient id="spot" cx="50%" cy="0%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.13"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dotfade" cx="50%" cy="38%" r="62%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="dotmask">
+      <rect width="1280" height="640" fill="url(#dotfade)"/>
+    </mask>
+
+    <linearGradient id="wordmark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="62%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#8b8b94"/>
+    </linearGradient>
+
+    <!-- titanium chassis -->
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4a4a55"/>
+      <stop offset="34%" stop-color="#17171d"/>
+      <stop offset="70%" stop-color="#0d0d12"/>
+      <stop offset="100%" stop-color="#33333f"/>
+    </linearGradient>
+    <linearGradient id="shellFold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2b2b34"/>
+      <stop offset="100%" stop-color="#0b0b0f"/>
+    </linearGradient>
+    <linearGradient id="screen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#191926"/>
+      <stop offset="62%" stop-color="#07070c"/>
+    </linearGradient>
+    <linearGradient id="screenFold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#121219"/>
+      <stop offset="100%" stop-color="#060609"/>
+    </linearGradient>
+    <linearGradient id="hinge" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0a0a0f"/>
+      <stop offset="40%" stop-color="#6d6d80"/>
+      <stop offset="52%" stop-color="#9a9aae"/>
+      <stop offset="100%" stop-color="#14141a"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+  </defs>
+
+  <!-- ground -->
+  <rect width="1280" height="640" fill="#08080a"/>
+  <rect width="1280" height="640" fill="url(#dots)" mask="url(#dotmask)"/>
+  <rect width="1280" height="640" fill="url(#spot)"/>
+
+  <!-- Device at real proportions: open 164.6 x 117.8 mm, closed 84.1 mm. Drawn mid fold. -->
+  <g transform="translate(726 150) scale(1.12)">
+    <!-- contact shadow -->
+    <ellipse cx="150" cy="322" rx="190" ry="20" fill="#000000" fill-opacity="0.62" filter="url(#soft)"/>
+
+    <!-- static half : 82.3mm x 117.8mm at 2.6 px/mm -->
+    <g>
+      <rect x="0" y="0" width="214" height="306" rx="25" fill="url(#shell)"/>
+      <path d="M9 25a16 16 0 0 1 16-16h189v288H25A16 16 0 0 1 9 281Z" fill="url(#screen)"/>
+      <!-- list rows -->
+      <g fill="#ffffff">
+        <rect x="24" y="30" width="86" height="7" rx="3.5" fill-opacity="0.55"/>
+        <g fill-opacity="0.13">
+          <rect x="24" y="52" width="166" height="30" rx="8"/>
+          <rect x="24" y="90" width="166" height="30" rx="8"/>
+          <rect x="24" y="128" width="166" height="30" rx="8"/>
+          <rect x="24" y="166" width="166" height="30" rx="8"/>
+          <rect x="24" y="204" width="166" height="30" rx="8"/>
+        </g>
+        <g fill-opacity="0.30">
+          <rect x="30" y="58" width="18" height="18" rx="5"/>
+          <rect x="30" y="96" width="18" height="18" rx="5"/>
+          <rect x="30" y="134" width="18" height="18" rx="5"/>
+          <rect x="30" y="172" width="18" height="18" rx="5"/>
+          <rect x="30" y="210" width="18" height="18" rx="5"/>
+        </g>
+        <rect x="24" y="242" width="166" height="34" rx="9" fill-opacity="0.22"/>
+      </g>
+      <!-- vertical control rail: the system moves controls to the side -->
+      <g fill="#ffffff" fill-opacity="0.34">
+        <rect x="-1" y="112" width="4" height="16" rx="2"/>
+        <rect x="-1" y="136" width="4" height="16" rx="2"/>
+        <rect x="-1" y="160" width="4" height="16" rx="2"/>
+      </g>
+    </g>
+
+    <!-- hinge spine -->
+    <rect x="212" y="16" width="6" height="274" rx="3" fill="url(#hinge)"/>
+
+    <!-- folding half, foreshortened : rotating away from the viewer -->
+    <path d="M218 0 L352 20 L352 286 L218 306 Z" fill="url(#shellFold)"/>
+    <path d="M226 9 L344 27 L344 279 L226 297 Z" fill="url(#screenFold)"/>
+    <g fill="#ffffff" fill-opacity="0.16">
+      <path d="M238 44 L332 56 L332 128 L238 120 Z"/>
+      <path d="M238 140 L332 148 L332 220 L238 216 Z"/>
+    </g>
+    <!-- specular edge along the fold -->
+    <path d="M219 2 L219 304" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2"/>
+  </g>
+
+  <!-- Wordmark                                                          -->
+  <g transform="translate(96 252)" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+    <!-- mark: two panels + seam -->
+    <g transform="translate(2 -116)">
+      <rect x="0" y="0" width="15" height="30" rx="4.5" fill="#ffffff"/>
+      <rect x="20" y="0" width="15" height="30" rx="4.5" fill="#ffffff" fill-opacity="0.40"/>
+    </g>
+
+    <text x="0" y="0" font-size="92" font-weight="700" letter-spacing="-4" fill="url(#wordmark)">duocn</text>
+    <text x="0" y="46" font-size="25" font-weight="500" letter-spacing="-0.3" fill="#a1a1aa">development for iPhone Duo</text>
+
+    <line x1="0" y1="84" x2="430" y2="84" stroke="#ffffff" stroke-opacity="0.13"/>
+
+    <text x="0" y="118" font-size="16" font-family="SF Mono, Menlo, Consolas, monospace" fill="#6b6b74">
+      SwiftUI &#183; iOS 27.1 &#183; 18 components &#183; 0 dependencies &#183; MIT
+    </text>
+
+    <g transform="translate(0 146)">
+      <rect x="0" y="0" width="286" height="40" rx="10" fill="#ffffff" fill-opacity="0.045" stroke="#ffffff" stroke-opacity="0.13"/>
+      <text x="16" y="26" font-size="15" font-family="SF Mono, Menlo, Consolas, monospace" fill="#8b8b94">$</text>
+      <text x="34" y="26" font-size="15" font-family="SF Mono, Menlo, Consolas, monospace" fill="#e4e4e7">npx duocn add companion-pane</text>
+    </g>
+  </g>
+</svg>

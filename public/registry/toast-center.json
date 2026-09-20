@@ -1,0 +1,17 @@
+{
+  "slug": "toast-center",
+  "name": "ToastCenter",
+  "category": "Feedback",
+  "tagline": "Queued transient messages, on the panel that earned them.",
+  "duoOnly": false,
+  "dependsOn": [
+    "glass-card",
+    "duo-haptics"
+  ],
+  "files": [
+    {
+      "path": "ToastCenter.swift",
+      "content": "import SwiftUI\n\n/// App-wide transient messages, queued so two never collide.\n///\n/// On an open Duo toasts appear on the panel the action happened on, which is\n/// the whole point — a confirmation on the far screen is a confirmation nobody\n/// reads.\n///\n/// ```swift\n/// DuoStage { RootView() }\n///     .toastCenter()\n///\n/// // anywhere:\n/// ToastCenter.shared.post(.success(\"Saved to Library\"))\n/// ```\n@MainActor\n@Observable\npublic final class ToastCenter {\n    public static let shared = ToastCenter()\n\n    public struct Toast: Identifiable, Equatable {\n        public let id = UUID()\n        public var message: String\n        public var systemImage: String\n        public var tint: Color\n        public var duration: Duration\n\n        public static func success(_ message: String) -> Toast {\n            Toast(message: message, systemImage: \"checkmark.circle.fill\", tint: DuoColor.positive, duration: .seconds(2))\n        }\n        public static func error(_ message: String) -> Toast {\n            Toast(message: message, systemImage: \"exclamationmark.triangle.fill\", tint: DuoColor.critical, duration: .seconds(3))\n        }\n        public static func info(_ message: String, systemImage: String = \"info.circle.fill\") -> Toast {\n            Toast(message: message, systemImage: systemImage, tint: DuoColor.accent, duration: .seconds(2))\n        }\n\n        public static func == (lhs: Toast, rhs: Toast) -> Bool { lhs.id == rhs.id }\n    }\n\n    public private(set) var current: Toast?\n    private var queue: [Toast] = []\n    private var draining = false\n\n    public func post(_ toast: Toast, on display: DuoDisplay = .inner) {\n        queue.append(toast)\n        DuoHaptics.play(toast.tint == DuoColor.critical ? .failure : .success, on: display)\n        guard !draining else { return }\n        draining = true\n        Task { await drain() }\n    }\n\n    private func drain() async {\n        while !queue.isEmpty {\n            let next = queue.removeFirst()\n            withAnimation(.spring(response: 0.4, dampingFraction: 0.78)) { current = next }\n            try? await Task.sleep(for: next.duration)\n            withAnimation(.easeIn(duration: 0.2)) { current = nil }\n            try? await Task.sleep(for: .milliseconds(180))\n        }\n        draining = false\n    }\n}\n\npublic extension View {\n    /// Install the toast presenter. Apply once, at the root.\n    func toastCenter(alignment: Alignment = .top) -> some View {\n        overlay(alignment: alignment) {\n            if let toast = ToastCenter.shared.current {\n                HStack(spacing: DuoSpacing.sm) {\n                    Image(systemName: toast.systemImage).foregroundStyle(toast.tint)\n                    Text(toast.message).font(.duo(.label))\n                }\n                .padding(.horizontal, DuoSpacing.lg)\n                .padding(.vertical, DuoSpacing.md)\n                .duoGlass(.floating, radius: DuoRadius.panel)\n                .padding(DuoSpacing.lg)\n                .transition(.move(edge: alignment == .bottom ? .bottom : .top).combined(with: .opacity))\n                .accessibilityAddTraits(.isStaticText)\n            }\n        }\n    }\n}\n"
+    }
+  ]
+}

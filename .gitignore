@@ -1,0 +1,9 @@
+node_modules
+.next
+.DS_Store
+swift/DuoCN/.build
+next-env.d.ts
+*.tsbuildinfo
+
+# intermediate research output from the brief workflow (kept locally)
+brief/_raw/

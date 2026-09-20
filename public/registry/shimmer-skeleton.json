@@ -1,0 +1,14 @@
+{
+  "slug": "shimmer-skeleton",
+  "name": "ShimmerSkeleton",
+  "category": "Feedback",
+  "tagline": "One light source across two panels.",
+  "duoOnly": false,
+  "dependsOn": [],
+  "files": [
+    {
+      "path": "ShimmerSkeleton.swift",
+      "content": "import SwiftUI\n\n/// Loading placeholder with a sweep that crosses both panels as one light source.\n///\n/// Two independent shimmers on two panels look like two apps. `ShimmerSkeleton`\n/// phases its sweep by the view's position in the stage, so the highlight\n/// travels across the seam continuously.\npublic struct ShimmerSkeleton: View {\n    private let lines: Int\n    private let cornerRadius: CGFloat\n\n    @State private var phase: CGFloat = -1\n    @Environment(\\.duoDisplay) private var display\n    @Environment(\\.accessibilityReduceMotion) private var reduceMotion\n\n    public init(lines: Int = 3, cornerRadius: CGFloat = DuoRadius.sm) {\n        self.lines = lines\n        self.cornerRadius = cornerRadius\n    }\n\n    public var body: some View {\n        VStack(alignment: .leading, spacing: DuoSpacing.sm) {\n            ForEach(0..<lines, id: \\.self) { index in\n                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)\n                    .fill(DuoColor.surface)\n                    .frame(height: 14)\n                    .frame(maxWidth: index == lines - 1 ? 180 : .infinity, alignment: .leading)\n            }\n        }\n        .overlay(sweep.mask(shape))\n        .onAppear {\n            guard !reduceMotion else { return }\n            withAnimation(.linear(duration: 1.4).repeatForever(autoreverses: false)) { phase = 2 }\n        }\n        .accessibilityLabel(\"Loading\")\n    }\n\n    private var shape: some View {\n        VStack(alignment: .leading, spacing: DuoSpacing.sm) {\n            ForEach(0..<lines, id: \\.self) { index in\n                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)\n                    .frame(height: 14)\n                    .frame(maxWidth: index == lines - 1 ? 180 : .infinity, alignment: .leading)\n            }\n        }\n    }\n\n    /// Secondary panel starts half a cycle later, so the sweep looks continuous.\n    private var sweep: some View {\n        let offset: CGFloat = display == .outer ? -0.5 : 0\n        return LinearGradient(\n            colors: [.clear, .white.opacity(0.35), .clear],\n            startPoint: .leading,\n            endPoint: .trailing\n        )\n        .scaleEffect(x: 0.4, anchor: .leading)\n        .offset(x: (phase + offset) * 420)\n        .blendMode(.plusLighter)\n        .allowsHitTesting(false)\n    }\n}\n"
+    }
+  ]
+}

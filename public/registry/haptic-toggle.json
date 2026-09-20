@@ -1,0 +1,16 @@
+{
+  "slug": "haptic-toggle",
+  "name": "HapticToggle",
+  "category": "Controls",
+  "tagline": "A knob that leans into the motion, and state you can feel.",
+  "duoOnly": false,
+  "dependsOn": [
+    "duo-haptics"
+  ],
+  "files": [
+    {
+      "path": "HapticToggle.swift",
+      "content": "import SwiftUI\n\n/// A toggle with a knob that leans into the motion, and distinct on/off haptics\n/// — a rigid tick on, a soft one off, so users can tell state by feel.\n///\n/// ```swift\n/// HapticToggle(\"Spatial audio\", isOn: $spatial)\n/// ```\npublic struct HapticToggle: View {\n    private let title: String\n    private let subtitle: String?\n    @Binding private var isOn: Bool\n    @Environment(\\.duoDisplay) private var display\n\n    public init(_ title: String, subtitle: String? = nil, isOn: Binding<Bool>) {\n        self.title = title\n        self.subtitle = subtitle\n        self._isOn = isOn\n    }\n\n    public var body: some View {\n        Button {\n            withAnimation(.spring(response: 0.34, dampingFraction: 0.66)) { isOn.toggle() }\n            DuoHaptics.play(isOn ? .toggleOn : .toggleOff, on: display)\n        } label: {\n            HStack(spacing: DuoSpacing.md) {\n                VStack(alignment: .leading, spacing: 2) {\n                    Text(title).font(.duo(.label)).foregroundStyle(DuoColor.label)\n                    if let subtitle {\n                        Text(subtitle).font(.duo(.caption)).foregroundStyle(DuoColor.secondaryLabel)\n                    }\n                }\n                Spacer(minLength: DuoSpacing.md)\n                track\n            }\n            .contentShape(Rectangle())\n        }\n        .buttonStyle(.plain)\n        .accessibilityRepresentation {\n            Toggle(title, isOn: $isOn)\n        }\n    }\n\n    private var track: some View {\n        Capsule()\n            .fill(isOn ? AnyShapeStyle(DuoColor.accentGradient) : AnyShapeStyle(DuoColor.surfaceRaised))\n            .frame(width: 52, height: 32)\n            .overlay(alignment: isOn ? .trailing : .leading) {\n                Circle()\n                    .fill(.white)\n                    .padding(3)\n                    .shadow(color: .black.opacity(0.22), radius: 3, y: 1)\n                    // Knob squashes toward travel direction, then rounds out.\n                    .scaleEffect(x: 1.14, y: 0.92, anchor: isOn ? .trailing : .leading)\n            }\n            .frame(width: 52, height: 32)\n    }\n}\n"
+    }
+  ]
+}

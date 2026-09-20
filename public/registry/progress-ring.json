@@ -1,0 +1,16 @@
+{
+  "slug": "progress-ring",
+  "name": "ProgressRing",
+  "category": "Feedback",
+  "tagline": "Determinate and indeterminate from one view.",
+  "duoOnly": false,
+  "dependsOn": [
+    "duo-theme"
+  ],
+  "files": [
+    {
+      "path": "ProgressRing.swift",
+      "content": "import SwiftUI\n\n/// A progress ring with a gradient that rotates with the value, so the\n/// brightest point is always at the head of the arc.\n///\n/// Supports determinate and indeterminate states from the same view — pass\n/// `nil` for progress and it spins.\n///\n/// ```swift\n/// ProgressRing(progress: 0.68, label: \"68%\")\n/// ProgressRing(progress: nil)          // indeterminate\n/// ```\npublic struct ProgressRing: View {\n    private let progress: Double?\n    private let label: String?\n    private let lineWidth: CGFloat\n\n    @State private var spin: Double = 0\n    @Environment(\\.accessibilityReduceMotion) private var reduceMotion\n\n    public init(progress: Double?, label: String? = nil, lineWidth: CGFloat = 10) {\n        self.progress = progress.map { min(max($0, 0), 1) }\n        self.label = label\n        self.lineWidth = lineWidth\n    }\n\n    public var body: some View {\n        ZStack {\n            Circle()\n                .stroke(DuoColor.surface, lineWidth: lineWidth)\n            Circle()\n                .trim(from: 0, to: progress ?? 0.22)\n                .stroke(\n                    AngularGradient(\n                        colors: [DuoColor.accentAlt, DuoColor.accent, DuoColor.accentAlt],\n                        center: .center\n                    ),\n                    style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)\n                )\n                .rotationEffect(.degrees(-90 + (progress == nil ? spin : 0)))\n                .animation(.spring(response: 0.5, dampingFraction: 0.85), value: progress)\n            if let label {\n                Text(label)\n                    .font(.duo(.headline))\n                    .contentTransition(.numericText())\n            }\n        }\n        .onAppear {\n            guard progress == nil, !reduceMotion else { return }\n            withAnimation(.linear(duration: 0.9).repeatForever(autoreverses: false)) { spin = 360 }\n        }\n        .accessibilityElement()\n        .accessibilityLabel(label ?? \"Progress\")\n        .accessibilityValue(progress.map { \"\\(Int($0 * 100)) percent\" } ?? \"In progress\")\n    }\n}\n"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "slug": "floating-dock",
+  "name": "FloatingDock",
+  "category": "Navigation",
+  "tagline": "Magnifying action strip with distance falloff.",
+  "duoOnly": false,
+  "dependsOn": [
+    "glass-card"
+  ],
+  "files": [
+    {
+      "path": "FloatingDock.swift",
+      "content": "import SwiftUI\n\n/// A floating dock of actions with magnification on hover or drag-over.\n///\n/// Items grow with distance falloff, so the row reads as one elastic strip.\n/// Sized for thumbs when closed and for a pointer when the Duo is docked.\n///\n/// ```swift\n/// FloatingDock(items: [\n///     .init(systemImage: \"wand.and.stars\", title: \"Enhance\") { enhance() },\n///     .init(systemImage: \"crop\", title: \"Crop\") { crop() }\n/// ])\n/// ```\npublic struct FloatingDock: View {\n    public struct Item: Identifiable {\n        public let id = UUID()\n        public let systemImage: String\n        public let title: String\n        public let action: () -> Void\n\n        public init(systemImage: String, title: String, action: @escaping () -> Void) {\n            self.systemImage = systemImage\n            self.title = title\n            self.action = action\n        }\n    }\n\n    private let items: [Item]\n    @State private var focused: UUID?\n    @Environment(\\.duoDisplay) private var display\n\n    public init(items: [Item]) { self.items = items }\n\n    public var body: some View {\n        HStack(spacing: DuoSpacing.sm) {\n            ForEach(Array(items.enumerated()), id: \\.element.id) { index, item in\n                Button {\n                    item.action()\n                    DuoHaptics.play(.select, on: display)\n                } label: {\n                    Image(systemName: item.systemImage)\n                        .font(.system(size: 20, weight: .medium))\n                        .frame(width: 46, height: 46)\n                        .background(DuoColor.surface, in: Circle())\n                        .scaleEffect(scale(for: index))\n                }\n                .buttonStyle(.plain)\n                .accessibilityLabel(item.title)\n                .onHover { inside in\n                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {\n                        focused = inside ? item.id : (focused == item.id ? nil : focused)\n                    }\n                }\n            }\n        }\n        .padding(DuoSpacing.sm)\n        .duoGlass(.floating, radius: DuoRadius.panel)\n    }\n\n    /// Distance falloff: neighbours of the focused item grow a little too.\n    private func scale(for index: Int) -> CGFloat {\n        guard let focused, let focusIndex = items.firstIndex(where: { $0.id == focused }) else { return 1 }\n        let distance = abs(index - focusIndex)\n        switch distance {\n        case 0: return 1.32\n        case 1: return 1.14\n        case 2: return 1.05\n        default: return 1\n        }\n    }\n}\n"
+    }
+  ]
+}

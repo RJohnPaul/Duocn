@@ -1,0 +1,181 @@
+{
+  "version": "1.0.0",
+  "components": [
+    {
+      "slug": "duo-stage",
+      "name": "DuoStage",
+      "category": "Duo Layout",
+      "tagline": "Root container that reads the hardware and publishes it.",
+      "duoOnly": true,
+      "dependsOn": []
+    },
+    {
+      "slug": "companion-pane",
+      "name": "CompanionPane",
+      "category": "Duo Layout",
+      "tagline": "Controls that stop covering the thing they control.",
+      "duoOnly": true,
+      "dependsOn": [
+        "duo-stage",
+        "glass-card"
+      ]
+    },
+    {
+      "slug": "spanning-scroll",
+      "name": "SpanningScroll",
+      "category": "Duo Layout",
+      "tagline": "A scroll view that never lets the fold bisect a row.",
+      "duoOnly": true,
+      "dependsOn": [
+        "duo-stage"
+      ]
+    },
+    {
+      "slug": "duo-preview",
+      "name": "DuoPreviewStage",
+      "category": "Media",
+      "tagline": "Show the subject what the camera sees.",
+      "duoOnly": true,
+      "dependsOn": [
+        "duo-stage"
+      ]
+    },
+    {
+      "slug": "duo-theme",
+      "name": "DuoTheme",
+      "category": "Foundations",
+      "tagline": "Spacing, radii, colour and type — four scales, no config file.",
+      "duoOnly": false,
+      "dependsOn": []
+    },
+    {
+      "slug": "glass-card",
+      "name": "GlassCard",
+      "category": "Foundations",
+      "tagline": "The material every floating surface is drawn on.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme"
+      ]
+    },
+    {
+      "slug": "duo-haptics",
+      "name": "DuoHaptics",
+      "category": "Foundations",
+      "tagline": "One call site, and it fires on the right panel.",
+      "duoOnly": false,
+      "dependsOn": []
+    },
+    {
+      "slug": "duo-button",
+      "name": "DuoButton",
+      "category": "Controls",
+      "tagline": "Four roles, three sizes, one press that feels like glass.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme",
+        "duo-haptics"
+      ]
+    },
+    {
+      "slug": "liquid-slider",
+      "name": "LiquidSlider",
+      "category": "Controls",
+      "tagline": "Velocity-aware, rubber-banded, grows under the thumb.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme",
+        "duo-haptics"
+      ]
+    },
+    {
+      "slug": "haptic-toggle",
+      "name": "HapticToggle",
+      "category": "Controls",
+      "tagline": "A knob that leans into the motion, and state you can feel.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-haptics"
+      ]
+    },
+    {
+      "slug": "segmented-pill",
+      "name": "SegmentedPill",
+      "category": "Controls",
+      "tagline": "One pill that travels, not a crossfade.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme"
+      ]
+    },
+    {
+      "slug": "floating-dock",
+      "name": "FloatingDock",
+      "category": "Navigation",
+      "tagline": "Magnifying action strip with distance falloff.",
+      "duoOnly": false,
+      "dependsOn": [
+        "glass-card"
+      ]
+    },
+    {
+      "slug": "duo-sheet",
+      "name": "DuoSheet",
+      "category": "Navigation",
+      "tagline": "A sheet when closed. A resident column when open.",
+      "duoOnly": true,
+      "dependsOn": [
+        "companion-pane"
+      ]
+    },
+    {
+      "slug": "toast-center",
+      "name": "ToastCenter",
+      "category": "Feedback",
+      "tagline": "Queued transient messages, on the panel that earned them.",
+      "duoOnly": false,
+      "dependsOn": [
+        "glass-card",
+        "duo-haptics"
+      ]
+    },
+    {
+      "slug": "shimmer-skeleton",
+      "name": "ShimmerSkeleton",
+      "category": "Feedback",
+      "tagline": "One light source across two panels.",
+      "duoOnly": false,
+      "dependsOn": []
+    },
+    {
+      "slug": "progress-ring",
+      "name": "ProgressRing",
+      "category": "Feedback",
+      "tagline": "Determinate and indeterminate from one view.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme"
+      ]
+    },
+    {
+      "slug": "cover-carousel",
+      "name": "CoverCarousel",
+      "category": "Media",
+      "tagline": "Cards that fold along the same line as the hardware.",
+      "duoOnly": true,
+      "dependsOn": [
+        "duo-stage"
+      ]
+    },
+    {
+      "slug": "avatar-stack",
+      "name": "AvatarStack",
+      "category": "Media",
+      "tagline": "Overlapping faces with a live ring on the speaker.",
+      "duoOnly": false,
+      "dependsOn": [
+        "duo-theme"
+      ]
+    }
+  ]
+}

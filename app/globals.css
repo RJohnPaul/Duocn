@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+@theme {
+  /* Monochrome only. If a colour shows up on this site, it is a bug. */
+  --color-ink: #08080a;
+  --color-ink-2: #0d0d10;
+  --color-ink-3: #131317;
+  --color-line: #1e1e23;
+  --color-line-strong: #2e2e36;
+  --color-fog: #a1a1aa;
+  --color-fog-2: #6b6b74;
+  --color-chalk: #fafafa;
+
+  --font-sans: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  --radius-panel: 2.75rem;
+
+  --animate-sheen: sheen 2.6s linear infinite;
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-marquee: marquee 40s linear infinite;
+
+  /* iOS standard curve — used for chrome, not for the hinge. */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes sheen {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(220%); }
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+:root { color-scheme: dark; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 6rem; }
+
+body {
+  background: var(--color-ink);
+  color: var(--color-chalk);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: rgba(255, 255, 255, 0.18); }
+
+* { scrollbar-width: thin; scrollbar-color: #ffffff1f transparent; }
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: #ffffff1c; border-radius: 99px; }
+*::-webkit-scrollbar-track { background: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@utility glass {
+  background: linear-gradient(180deg, #ffffff0d, #ffffff05);
+  backdrop-filter: blur(24px) saturate(1.1);
+  border: 1px solid var(--color-line);
+}
+
+/* Silver, not chrome-rainbow. The only "gradient" on the site. */
+@utility grad-text {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #8b8b94 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility hairline {
+  border: 1px solid var(--color-line);
+}
+
+/* Dot grid, used behind the hero. */
+@utility dotfield {
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.09) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+/*
+ * Swift syntax highlighting, monochrome.
+ * Differentiation comes from weight and opacity rather than hue, so the code
+ * block sits inside the black-and-white system instead of fighting it.
+ */
+.tok-key { color: #ffffff; font-weight: 600; }
+.tok-type { color: #d4d4d8; }
+.tok-str { color: #9b9ba3; }
+.tok-num { color: #c8c8ce; }
+.tok-com { color: #4e4e57; font-style: italic; }
+.tok-attr { color: #e4e4e7; }
+.tok-fn { color: #f4f4f5; }
+
+pre code { font-family: var(--font-mono); font-size: 13px; line-height: 1.65; }

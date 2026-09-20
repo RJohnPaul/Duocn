@@ -1,0 +1,16 @@
+{
+  "slug": "avatar-stack",
+  "name": "AvatarStack",
+  "category": "Media",
+  "tagline": "Overlapping faces with a live ring on the speaker.",
+  "duoOnly": false,
+  "dependsOn": [
+    "duo-theme"
+  ],
+  "files": [
+    {
+      "path": "AvatarStack.swift",
+      "content": "import SwiftUI\n\n/// Overlapping avatars with an overflow count, and a live ring on whoever is\n/// speaking. Built for the Duo's split call layout, where the roster sits on\n/// one panel and the stage on the other.\n///\n/// ```swift\n/// AvatarStack(people: room.participants, speakingID: room.activeSpeaker)\n/// ```\npublic struct AvatarStack<Person: Identifiable>: View {\n    private let people: [Person]\n    private let visible: Int\n    private let speakingID: Person.ID?\n    private let size: CGFloat\n    private let image: (Person) -> Image?\n    private let initials: (Person) -> String\n\n    public init(\n        people: [Person],\n        visible: Int = 4,\n        speakingID: Person.ID? = nil,\n        size: CGFloat = 38,\n        image: @escaping (Person) -> Image? = { _ in nil },\n        initials: @escaping (Person) -> String\n    ) {\n        self.people = people\n        self.visible = max(visible, 1)\n        self.speakingID = speakingID\n        self.size = size\n        self.image = image\n        self.initials = initials\n    }\n\n    public var body: some View {\n        HStack(spacing: -size * 0.32) {\n            ForEach(people.prefix(visible)) { person in\n                avatar(person)\n                    .zIndex(person.id == speakingID ? 1 : 0)\n            }\n            if people.count > visible {\n                Text(\"+\\(people.count - visible)\")\n                    .font(.duo(.caption))\n                    .foregroundStyle(DuoColor.secondaryLabel)\n                    .frame(width: size, height: size)\n                    .background(DuoColor.surfaceRaised, in: Circle())\n                    .overlay(Circle().strokeBorder(DuoColor.hairline, lineWidth: 1))\n            }\n        }\n        .accessibilityElement(children: .ignore)\n        .accessibilityLabel(\"\\(people.count) participants\")\n    }\n\n    @ViewBuilder\n    private func avatar(_ person: Person) -> some View {\n        let speaking = person.id == speakingID\n        Group {\n            if let image = image(person) {\n                image.resizable().scaledToFill()\n            } else {\n                Text(initials(person))\n                    .font(.system(size: size * 0.38, weight: .semibold))\n                    .foregroundStyle(.white)\n                    .frame(maxWidth: .infinity, maxHeight: .infinity)\n                    .background(DuoColor.accentGradient)\n            }\n        }\n        .frame(width: size, height: size)\n        .clipShape(Circle())\n        .overlay(\n            Circle().strokeBorder(speaking ? DuoColor.positive : .black.opacity(0.35), lineWidth: speaking ? 2.5 : 2)\n        )\n        .scaleEffect(speaking ? 1.1 : 1)\n        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: speaking)\n    }\n}\n"
+    }
+  ]
+}

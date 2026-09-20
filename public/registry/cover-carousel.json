@@ -1,0 +1,16 @@
+{
+  "slug": "cover-carousel",
+  "name": "CoverCarousel",
+  "category": "Media",
+  "tagline": "Cards that fold along the same line as the hardware.",
+  "duoOnly": true,
+  "dependsOn": [
+    "duo-stage"
+  ],
+  "files": [
+    {
+      "path": "CoverCarousel.swift",
+      "content": "import SwiftUI\n\n/// A depth carousel that uses the hinge angle as a real camera angle.\n///\n/// Cards tilt away from centre in 3D. When the Duo is partly folded the tilt\n/// is biased toward the seam, so the stack appears to fold along the same line\n/// as the hardware. It is the one effect that makes an app feel *made* for the\n/// device rather than resized onto it.\n///\n/// ```swift\n/// CoverCarousel(items: albums) { album in\n///     AsyncImage(url: album.art)\n/// }\n/// ```\npublic struct CoverCarousel<Item: Identifiable, Card: View>: View {\n    private let items: [Item]\n    private let cardWidth: CGFloat\n    private let card: (Item) -> Card\n\n    @Environment(\\.duoFold) private var fold\n\n    public init(items: [Item], cardWidth: CGFloat = 220, @ViewBuilder card: @escaping (Item) -> Card) {\n        self.items = items\n        self.cardWidth = cardWidth\n        self.card = card\n    }\n\n    public var body: some View {\n        GeometryReader { outer in\n            let centre = outer.frame(in: .global).midX\n            ScrollView(.horizontal) {\n                HStack(spacing: DuoSpacing.lg) {\n                    ForEach(items) { item in\n                        GeometryReader { inner in\n                            let delta = (inner.frame(in: .global).midX - centre) / cardWidth\n                            card(item)\n                                .frame(width: cardWidth, height: cardWidth * 1.25)\n                                .clipShape(RoundedRectangle(cornerRadius: DuoRadius.lg, style: .continuous))\n                                .rotation3DEffect(\n                                    .degrees(Double(delta) * tiltStrength),\n                                    axis: (x: 0, y: 1, z: 0),\n                                    perspective: 0.6\n                                )\n                                .scaleEffect(1 - min(abs(delta) * 0.12, 0.28))\n                                .opacity(1 - min(abs(Double(delta)) * 0.25, 0.55))\n                        }\n                        .frame(width: cardWidth, height: cardWidth * 1.25)\n                    }\n                }\n                .scrollTargetLayout()\n                .padding(.horizontal, (outer.size.width - cardWidth) / 2)\n            }\n            .scrollTargetBehavior(.viewAligned)\n            .scrollIndicators(.hidden)\n        }\n        .frame(height: cardWidth * 1.25)\n    }\n\n    /// Flat hinge = gentle tilt; a folded book angle exaggerates it to match.\n    private var tiltStrength: Double {\n        let fold = 1 - (fold.angle.degrees / 180)\n        return 26 + fold * 18\n    }\n}\n"
+    }
+  ]
+}

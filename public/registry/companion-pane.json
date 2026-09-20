@@ -1,0 +1,17 @@
+{
+  "slug": "companion-pane",
+  "name": "CompanionPane",
+  "category": "Duo Layout",
+  "tagline": "Controls that stop covering the thing they control.",
+  "duoOnly": true,
+  "dependsOn": [
+    "duo-stage",
+    "glass-card"
+  ],
+  "files": [
+    {
+      "path": "CompanionPane.swift",
+      "content": "import SwiftUI\n\n/// Content that only exists when there is a second panel to put it on.\n///\n/// The Duo's win is that controls no longer have to cover the thing they\n/// control. Wrap your inspector, transport bar, keyboard or tool palette in a\n/// `CompanionPane` and it moves to the secondary panel when open, and\n/// gracefully becomes a bottom bar when folded.\n///\n/// ```swift\n/// ZStack { Canvas(...) }\n///     .companionPane(edge: .trailing) { BrushInspector() }\n/// ```\npublic struct CompanionPane<Base: View, Pane: View>: View {\n    private let base: Base\n    private let pane: Pane\n    private let edge: HorizontalEdge\n    private let width: CGFloat\n\n    @Environment(\\.duoPose) private var pose\n    @Environment(\\.duoFold) private var fold\n\n    public init(edge: HorizontalEdge = .trailing, width: CGFloat = 320, base: Base, @ViewBuilder pane: () -> Pane) {\n        self.edge = edge\n        self.width = width\n        self.base = base\n        self.pane = pane()\n    }\n\n    public var body: some View {\n        if pose == .landscape {\n            HStack(spacing: fold.divisionWidth) {\n                if edge == .leading { paneView }\n                base.frame(maxWidth: .infinity)\n                if edge == .trailing { paneView }\n            }\n            .transition(.move(edge: edge == .leading ? .leading : .trailing))\n        } else if pose == .portrait || pose == .seated {\n            VStack(spacing: fold.divisionWidth) {\n                base.frame(maxHeight: .infinity)\n                paneView.frame(maxWidth: .infinity)\n            }\n        } else {\n            base.safeAreaInset(edge: .bottom, spacing: 0) {\n                pane\n                    .padding(DuoSpacing.md)\n                    .duoGlass(.floating, radius: DuoRadius.lg)\n                    .padding(.horizontal, DuoSpacing.md)\n            }\n        }\n    }\n\n    private var paneView: some View {\n        pane\n            .frame(width: width)\n            .padding(DuoSpacing.lg)\n            .duoGlass(.raised, radius: DuoRadius.panel)\n    }\n}\n\npublic extension View {\n    /// Attach a companion pane that relocates itself per pose.\n    func companionPane<Pane: View>(\n        edge: HorizontalEdge = .trailing,\n        width: CGFloat = 320,\n        @ViewBuilder content: () -> Pane\n    ) -> some View {\n        CompanionPane(edge: edge, width: width, base: self, pane: content)\n    }\n}\n"
+    }
+  ]
+}

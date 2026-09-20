@@ -1,0 +1,16 @@
+{
+  "slug": "segmented-pill",
+  "name": "SegmentedPill",
+  "category": "Controls",
+  "tagline": "One pill that travels, not a crossfade.",
+  "duoOnly": false,
+  "dependsOn": [
+    "duo-theme"
+  ],
+  "files": [
+    {
+      "path": "SegmentedPill.swift",
+      "content": "import SwiftUI\n\n/// Segmented control with a glass pill that slides between options using a\n/// `matchedGeometryEffect`, so the selection is one continuous object instead\n/// of a crossfade.\n///\n/// ```swift\n/// SegmentedPill(selection: $range, options: Range.allCases) { $0.label }\n/// ```\npublic struct SegmentedPill<Option: Hashable & Identifiable>: View {\n    @Binding private var selection: Option\n    private let options: [Option]\n    private let label: (Option) -> String\n\n    @Namespace private var pill\n    @Environment(\\.duoDisplay) private var display\n\n    public init(selection: Binding<Option>, options: [Option], label: @escaping (Option) -> String) {\n        self._selection = selection\n        self.options = options\n        self.label = label\n    }\n\n    public var body: some View {\n        HStack(spacing: 2) {\n            ForEach(options) { option in\n                let active = option == selection\n                Button {\n                    guard !active else { return }\n                    withAnimation(.spring(response: 0.36, dampingFraction: 0.78)) { selection = option }\n                    DuoHaptics.play(.select, on: display)\n                } label: {\n                    Text(label(option))\n                        .font(.duo(.label))\n                        .foregroundStyle(active ? DuoColor.label : DuoColor.secondaryLabel)\n                        .padding(.vertical, DuoSpacing.sm)\n                        .frame(maxWidth: .infinity)\n                        .background {\n                            if active {\n                                Capsule(style: .continuous)\n                                    .fill(.regularMaterial)\n                                    .overlay(Capsule().strokeBorder(.white.opacity(0.2), lineWidth: 1))\n                                    .matchedGeometryEffect(id: \"pill\", in: pill)\n                            }\n                        }\n                        .contentShape(Capsule())\n                }\n                .buttonStyle(.plain)\n            }\n        }\n        .padding(3)\n        .background(DuoColor.surface, in: Capsule(style: .continuous))\n    }\n}\n"
+    }
+  ]
+}

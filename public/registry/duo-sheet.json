@@ -1,0 +1,16 @@
+{
+  "slug": "duo-sheet",
+  "name": "DuoSheet",
+  "category": "Navigation",
+  "tagline": "A sheet when closed. A resident column when open.",
+  "duoOnly": true,
+  "dependsOn": [
+    "companion-pane"
+  ],
+  "files": [
+    {
+      "path": "DuoSheet.swift",
+      "content": "import SwiftUI\n\n/// A detented sheet that becomes a side panel when the Duo opens.\n///\n/// A bottom sheet covering half the screen is a compromise you make on a phone\n/// with one display. On a Duo you don't have to: the same call presents a sheet\n/// when folded and a resident panel on the second screen when open.\n///\n/// ```swift\n/// ContentView()\n///     .duoSheet(isPresented: $showsFilters, detents: [0.32, 0.9]) {\n///         FiltersView()\n///     }\n/// ```\npublic struct DuoSheet<SheetContent: View>: ViewModifier {\n    @Binding private var isPresented: Bool\n    private let detents: [CGFloat]\n    private let sheetContent: SheetContent\n\n    @Environment(\\.duoPose) private var pose\n\n    public init(isPresented: Binding<Bool>, detents: [CGFloat], @ViewBuilder content: () -> SheetContent) {\n        self._isPresented = isPresented\n        self.detents = detents.isEmpty ? [0.5] : detents\n        self.sheetContent = content()\n    }\n\n    public func body(content: Content) -> some View {\n        if pose.isOpen {\n            // Second panel is free real estate — no need to cover anything.\n            content.companionPane {\n                if isPresented {\n                    VStack(alignment: .leading, spacing: DuoSpacing.md) {\n                        HStack {\n                            Spacer()\n                            Button { isPresented = false } label: {\n                                Image(systemName: \"xmark\")\n                            }\n                            .buttonStyle(.duo(.plain, size: .compact))\n                        }\n                        sheetContent\n                        Spacer(minLength: 0)\n                    }\n                    .transition(.move(edge: .trailing).combined(with: .opacity))\n                }\n            }\n            .animation(.duoFold, value: isPresented)\n        } else {\n            content.sheet(isPresented: $isPresented) {\n                sheetContent\n                    .presentationDetents(Set(detents.map { PresentationDetent.fraction($0) }))\n                    .presentationDragIndicator(.visible)\n                    .presentationBackground(.regularMaterial)\n                    .presentationCornerRadius(DuoRadius.panel)\n            }\n        }\n    }\n}\n\npublic extension View {\n    /// Present content as a sheet when folded, as a panel when open.\n    func duoSheet<C: View>(\n        isPresented: Binding<Bool>,\n        detents: [CGFloat] = [0.4, 0.95],\n        @ViewBuilder content: () -> C\n    ) -> some View {\n        modifier(DuoSheet(isPresented: isPresented, detents: detents, content: content))\n    }\n}\n"
+    }
+  ]
+}

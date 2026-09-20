@@ -1,0 +1,16 @@
+{
+  "slug": "spanning-scroll",
+  "name": "SpanningScroll",
+  "category": "Duo Layout",
+  "tagline": "A scroll view that never lets the fold bisect a row.",
+  "duoOnly": true,
+  "dependsOn": [
+    "duo-stage"
+  ],
+  "files": [
+    {
+      "path": "SpanningScroll.swift",
+      "content": "import SwiftUI\n\n/// A scroll view that knows a seam runs through it.\n///\n/// Rows are snapped so none is ever bisected by the hinge, and the seam gets a\n/// real gutter rather than a hidden row. Falls back to a plain `ScrollView`\n/// when folded, with no layout change to your content.\n///\n/// ```swift\n/// SpanningScroll(rowHeight: 76) {\n///     ForEach(tracks) { TrackRow(track: $0) }\n/// }\n/// ```\npublic struct SpanningScroll<Content: View>: View {\n    private let rowHeight: CGFloat\n    private let content: Content\n\n    @Environment(\\.duoPose) private var pose\n    @Environment(\\.duoFold) private var fold\n\n    public init(rowHeight: CGFloat, @ViewBuilder content: () -> Content) {\n        self.rowHeight = rowHeight\n        self.content = content()\n    }\n\n    public var body: some View {\n        GeometryReader { proxy in\n            ScrollView {\n                LazyVStack(spacing: 0) { content }\n                    .scrollTargetLayout()\n                    .padding(.top, divisionPadding(in: proxy.size))\n            }\n            // Snap so a row edge, never a row middle, meets the seam.\n            .scrollTargetBehavior(.viewAligned)\n            .safeAreaPadding(.vertical, DuoSpacing.sm)\n        }\n    }\n\n    /// Offset that puts a row boundary on the fold instead of through a row.\n    ///\n    /// Only meaningful while the division region is active: a fully open Duo is\n    /// one continuous canvas, and a closed one has no fold. Scrollable content\n    /// may cross the fold — this only stops a row being visually bisected.\n    private func divisionPadding(in size: CGSize) -> CGFloat {\n        guard fold.isDivisionActive, fold.axis == .horizontal, rowHeight > 0 else { return 0 }\n        let foldY = size.height * fold.position\n        let remainder = foldY.truncatingRemainder(dividingBy: rowHeight)\n        return rowHeight - remainder\n    }\n}\n"
+    }
+  ]
+}

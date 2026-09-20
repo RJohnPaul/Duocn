@@ -1,0 +1,16 @@
+{
+  "slug": "duo-preview",
+  "name": "DuoPreviewStage",
+  "category": "Media",
+  "tagline": "Show the subject what the camera sees.",
+  "duoOnly": true,
+  "dependsOn": [
+    "duo-stage"
+  ],
+  "files": [
+    {
+      "path": "DuoPreviewStage.swift",
+      "content": "import SwiftUI\n\n/// Show the subject a live preview on the outward-facing display.\n///\n/// This implements the pattern behind Apple's **Duo Preview**: while you shoot\n/// with the rear cameras, the outer display faces the person you are\n/// photographing, so they can see their own framing. It is not an invention of\n/// this library — it is a shipping iPhone Duo camera feature, and this is a\n/// SwiftUI scaffold for building your own version of it.\n///\n/// ```swift\n/// DuoPreviewStage {\n///     CameraPreview(session: session)          // what you see\n///         .overlay(alignment: .bottom) { ShutterBar() }\n/// } subject: {\n///     CameraPreview(session: session)          // what they see\n///         .overlay(CountdownRing(seconds: countdown))\n/// }\n/// ```\npublic struct DuoPreviewStage<Operator: View, Subject: View>: View {\n    private let operatorView: Operator\n    private let subjectView: Subject\n\n    @Environment(\\.duoPose) private var pose\n\n    public init(@ViewBuilder operatorView: () -> Operator, @ViewBuilder subject: () -> Subject) {\n        self.operatorView = operatorView()\n        self.subjectView = subject()\n    }\n\n    /// True when a display is actually facing away from the operator.\n    ///\n    /// Closed, both displays face the same way as the person holding it, so\n    /// there is no subject-facing surface and the preview is unavailable.\n    private var subjectDisplayAvailable: Bool { pose.isOpen }\n\n    public var body: some View {\n        operatorView\n            .environment(\\.duoDisplay, .inner)\n            .overlay(alignment: .topTrailing) {\n                if subjectDisplayAvailable {\n                    subjectView\n                        .environment(\\.duoDisplay, .outer)\n                        .frame(width: 132, height: 176)\n                        .clipShape(RoundedRectangle(cornerRadius: DuoRadius.md, style: .continuous))\n                        // Mirrored, because the panel faces the subject.\n                        .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))\n                        .overlay(alignment: .bottom) {\n                            Label(\"Subject view\", systemImage: \"person.crop.rectangle\")\n                                .font(.duo(.caption))\n                                .padding(.horizontal, DuoSpacing.sm)\n                                .padding(.vertical, 4)\n                                .background(.ultraThinMaterial, in: Capsule())\n                                .padding(DuoSpacing.sm)\n                        }\n                        .padding(DuoSpacing.lg)\n                        .transition(.scale(scale: 0.85).combined(with: .opacity))\n                }\n            }\n            .animation(.duoFold, value: pose)\n    }\n}\n"
+    }
+  ]
+}

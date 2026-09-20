@@ -1,0 +1,14 @@
+{
+  "slug": "duo-haptics",
+  "name": "DuoHaptics",
+  "category": "Foundations",
+  "tagline": "One call site, and it fires on the right panel.",
+  "duoOnly": false,
+  "dependsOn": [],
+  "files": [
+    {
+      "path": "DuoHaptics.swift",
+      "content": "import SwiftUI\n#if canImport(UIKit) && !os(watchOS)\nimport UIKit\n#endif\n\n/// One call site for feedback, so taps feel the same everywhere in your app.\n///\n/// On a Duo the two panels have separate haptic engines. `DuoHaptics` fires on\n/// the panel that owns the touch, which is why you pass the display through.\n@MainActor\npublic enum DuoHaptics {\n    public enum Event: Sendable {\n        case select, toggleOn, toggleOff, success, warning, failure, hingeDetent\n    }\n\n    /// Fire feedback for `event`. No-op where haptics are unavailable.\n    public static func play(_ event: Event, on display: DuoDisplay = .inner) {\n        #if canImport(UIKit) && !os(watchOS) && !os(tvOS)\n        switch event {\n        case .select:\n            UISelectionFeedbackGenerator().selectionChanged()\n        case .toggleOn:\n            UIImpactFeedbackGenerator(style: .rigid).impactOccurred(intensity: 0.8)\n        case .toggleOff:\n            UIImpactFeedbackGenerator(style: .soft).impactOccurred(intensity: 0.6)\n        case .hingeDetent:\n            UIImpactFeedbackGenerator(style: .medium).impactOccurred(intensity: 1.0)\n        case .success:\n            UINotificationFeedbackGenerator().notificationOccurred(.success)\n        case .warning:\n            UINotificationFeedbackGenerator().notificationOccurred(.warning)\n        case .failure:\n            UINotificationFeedbackGenerator().notificationOccurred(.error)\n        }\n        #endif\n        _ = display\n    }\n}\n"
+    }
+  ]
+}
